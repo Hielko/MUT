@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MUT
 {
@@ -40,8 +36,9 @@ namespace MUT
             }
             catch (Exception ex)
             {
-                Console.WriteLine(String.Format("Error loading URI: {0}",URI));
-                Console.WriteLine(ex.ToString());
+                Logger.Log.Error($"Error loading URI {URI}: {ex}");
+                //Console.WriteLine(String.Format("Error loading URI: {0}",URI));
+                //Console.WriteLine(ex.ToString());
                 throw;
             }
         }
