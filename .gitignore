@@ -328,3 +328,10 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+
+# MUT specific
+*.json
+testdata.txt
+icq-sharp-0.0.4/
+data/
