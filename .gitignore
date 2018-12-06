@@ -334,5 +334,6 @@ ASALocalRun/
 *.json
 testdata.txt
 connectionlog.txt
+debug.txt
 icq-sharp-0.0.4/
 data/
