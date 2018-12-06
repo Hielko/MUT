@@ -33,7 +33,6 @@ public class OutgoingMsgMngr : IEnumerable
         if (Msgs.Count > 0)
         {
             var last = Msgs.Last();
-            //MsgOrigins[] test = { MsgOrigins.Match, MsgOrigins.Special };
             if (last.MsgOrigin == MsgOrigins.Match || last.MsgOrigin == MsgOrigins.Special)
             {
                 return Msgs.RemoveAll(x => x.MsgOrigin == MsgOrigins.Default && x.MsgType==MsgTypes.Reply);
