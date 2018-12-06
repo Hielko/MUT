@@ -111,8 +111,6 @@ public class OutgoingMsgMngr : IEnumerable
         File.Delete(Filename);
     }
 
-
-
     public Boolean Load()
     {
         if (ResumeFileExists)
