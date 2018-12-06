@@ -333,5 +333,6 @@ ASALocalRun/
 # MUT specific
 *.json
 testdata.txt
+connectionlog.txt
 icq-sharp-0.0.4/
 data/
