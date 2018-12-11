@@ -1,22 +1,19 @@
-﻿using IcqSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using Logger;
 using System.Net;
-using IcqSharp.Base;
 using System.Timers;
 using System.Text.RegularExpressions;
 using MUT.Daily;
 using MUT.Common;
 using MUT.Reply;
+using System.Linq;
 
 namespace MUT
 {
     public class Program
     {
-        static int retryCount = 0;
-        static Session session;
         static GlobalSettings globalSettings;
         static OutgoingMsgMngr outgoingMsgMngr = new OutgoingMsgMngr();
         static ReplyModule replyModule;
@@ -24,20 +21,9 @@ namespace MUT
         static CommonModule commonModule;
         //static MyStats Stats = new MyStats();
         static Thread ThrProcessOutgoingMsgList;
-        static string encrPassword = "jiq91lpqA5aZ";
-        static string targetUserName;
-
-        private static void ReConnect(object o, EventArgs args)
-        {
-            Log.Error("ReConnect");
-            retryCount++;
-            if (retryCount < 1000)
-            {
-                System.Threading.Thread.Sleep(30000);
-                session.Dispose();
-                InitSession();
-            }
-        }
+        static ICollection<IConnector> plugins;
+        //  static string encrPassword = "jiq91lpqA5aZ";
+        //   static string targetUserName;
 
         private static void UploadLog(Object o, EventArgs e)
         {
@@ -54,7 +40,7 @@ namespace MUT
                 Console.WriteLine(ex.ToString());
             }
         }
-
+        /*
         private static void OnMessageReceived(IcqSharp.Base.Message message)
         {
             if (message.Contact.Nickname.Equals(targetUserName, StringComparison.CurrentCultureIgnoreCase))
@@ -87,6 +73,7 @@ namespace MUT
                 Log.Debug(logStr+"\n");
             }
         }
+       
 
         private static void InitSession()
         {
@@ -98,6 +85,7 @@ namespace MUT
             session.Connect();
             session.Messaging.MessageReceived += OnMessageReceived;
         }
+         */
 
         private static void InitCommon()
         {
@@ -128,7 +116,7 @@ namespace MUT
                 {
                     Log.Info("replyModule: re-loaded: " + replyModule);
                 };
-                replyModule.Init(globalSettings.SettingsURI ,globalSettings.SettingsPath);
+                replyModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
                 Log.Info("replyModule: " + replyModule);
             }
             catch (Exception ex)
@@ -171,21 +159,20 @@ namespace MUT
             do
             {
                 Thread.Sleep(5000);
-                Contact contact = session.ContactList.Contacts.Find(c => c.Nickname.Equals(targetUserName, StringComparison.CurrentCultureIgnoreCase));
-                if (contact != null)
+                OutgoingMsg msg = outgoingMsgMngr.PopFirstExpired();
+
+                if (msg != null)
                 {
-                    OutgoingMsg msg = outgoingMsgMngr.PopFirstExpired();
-                    if (msg != null)
+                    if (commonModule.IsTotalSilenceDay)
                     {
-                        if (commonModule.IsTotalSilenceDay)
-                        {
-                            Log.Debug("IsTotalSilenceDay: Not sending  " + msg.Message);
-                        }
-                        else
-                        {
-                            Log.Debug("Sending  " + msg.Message);
-                            session.Messaging.Send(new IcqSharp.Base.Message(contact, MessageType.Incoming, msg.Message));
-                        }
+                        Log.Debug("IsTotalSilenceDay: Not sending  " + msg.Message);
+                    }
+                    else
+                    {
+                        Log.Debug("Sending  " + msg.Message);
+                        //session.Messaging.Send(new IcqSharp.Base.Message(contact, MessageType.Incoming, msg.Message));
+                        //  plugins.ToList().ForEach(p => p.SendMessage(       ))
+
                     }
                 }
             } while (true);
@@ -210,7 +197,7 @@ namespace MUT
             System.Timers.Timer aTimer = new System.Timers.Timer();
             aTimer.Elapsed += delegate (Object o, ElapsedEventArgs e)
             {
-                String str = String.Format("Alive: Connected={0} ", session.IsConnected.ToString());
+                String str = ""; // String.Format("Alive: Connected={0} ", session.IsConnected.ToString());
                 if (!String.IsNullOrEmpty(globalSettings.GetWanIPHost))
                     str += String.Format("from Wanip={0}, ", GetWANIp());
                 Log.Debug(str);
@@ -223,7 +210,6 @@ namespace MUT
         public static void Main(string[] args)
         {
             globalSettings = GlobalSettingsIO.Load();
-
             if (!String.IsNullOrEmpty(globalSettings.UploadLogURI))
             {
                 Log.WriteEvent += UploadLog;
@@ -233,13 +219,15 @@ namespace MUT
             Log.Debug($"OSVersion: {Environment.OSVersion}");
             Log.Debug("Settings: " + globalSettings);
 
-            targetUserName = Crypto.DecryptStringAES(globalSettings.EncryptedTargetUserName, encrPassword);
+            List<String> DDLS = new List<string>();
+            globalSettings.Protocols.ForEach(m => { DDLS.Add(m.DDLFilename); });
+            plugins = MyPlugins<IConnector>.GetPlugins(DDLS.ToArray());
 
             InitCommon();
             InitReplies();
             InitDaily();
-            
-            InitSession();
+
+            plugins.ElementAt(0).InitSession(globalSettings, globalSettings.Protocols[0]);
 
             if (globalSettings.PingMinutes > 0)
             {

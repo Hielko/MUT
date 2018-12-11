@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IConnector.cs" />
     <Compile Include="Reply\AntiHammer.cs" />
     <Compile Include="Common\ConfigClasses.cs" />
     <Compile Include="Daily\ConfigClasses.cs" />
@@ -80,7 +81,6 @@
     <Compile Include="Reply\ConfigClasses.cs" />
     <Compile Include="Reply\Reply.cs" />
     <Compile Include="Reply\Typo.cs" />
-    <Compile Include="Stats.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Common\Common.cs" />
   </ItemGroup>
@@ -100,12 +100,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="update.sh" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\icq-sharp-0.0.4\IcqSharp.csproj">
-      <Project>{153bcffd-aa91-4a44-8987-97981873e692}</Project>
-      <Name>IcqSharp</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

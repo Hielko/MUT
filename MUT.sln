@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IcqSharp", "icq-sharp-0.0.4\IcqSharp.csproj", "{153BCFFD-AA91-4A44-8987-97981873E692}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{ED726175-A4E0-4B53-A088-6F868D06BAB6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Credentials", "Credentials\Credentials.csproj", "{6FB57F00-0B51-4B13-AD3E-C918162FE7F3}"
@@ -21,12 +19,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{153BCFFD-AA91-4A44-8987-97981873E692}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{153BCFFD-AA91-4A44-8987-97981873E692}.Debug|x86.ActiveCfg = Debug|x86
-		{153BCFFD-AA91-4A44-8987-97981873E692}.Debug|x86.Build.0 = Debug|x86
-		{153BCFFD-AA91-4A44-8987-97981873E692}.Release|Any CPU.ActiveCfg = Release|x86
-		{153BCFFD-AA91-4A44-8987-97981873E692}.Release|x86.ActiveCfg = Release|x86
-		{153BCFFD-AA91-4A44-8987-97981873E692}.Release|x86.Build.0 = Release|x86
 		{ED726175-A4E0-4B53-A088-6F868D06BAB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ED726175-A4E0-4B53-A088-6F868D06BAB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED726175-A4E0-4B53-A088-6F868D06BAB6}.Debug|x86.ActiveCfg = Debug|Any CPU

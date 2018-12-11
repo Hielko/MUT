@@ -46,7 +46,6 @@ namespace Tests
             }
         }
 
-
         static void Main(string[] args)
         {
             globalSettings = GlobalSettingsIO.Load();

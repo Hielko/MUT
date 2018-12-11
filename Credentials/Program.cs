@@ -11,22 +11,25 @@ namespace Credentials
             string encrPassword = "jiq91lpqA5aZ";
             GlobalSettings mySettings = GlobalSettingsIO.Load();
 
+            var p = new Protocol();
+            p.Name = "ICQ";
+            mySettings.Protocols.Add(p);
             Console.WriteLine("Enter Login");
             s = Console.ReadLine();
-            mySettings.EncryptedLogin = Crypto.EncryptStringAES(s, encrPassword);
-            Console.WriteLine(mySettings.EncryptedLogin);
+            p.EncryptedLogin = Crypto.EncryptStringAES(s, encrPassword);
+            Console.WriteLine(p.EncryptedLogin);
 
 
             Console.WriteLine("Enter pw");
-            s = mySettings.EncryptedPassword = Console.ReadLine();
-            mySettings.EncryptedPassword = Crypto.EncryptStringAES(s, encrPassword);
-            Console.WriteLine(mySettings.EncryptedPassword);
+            s = p.EncryptedPassword = Console.ReadLine();
+            p.EncryptedPassword = Crypto.EncryptStringAES(s, encrPassword);
+            Console.WriteLine(p.EncryptedPassword);
 
 
             Console.WriteLine("Enter TargetUserName");
-            s = mySettings.EncryptedTargetUserName = Console.ReadLine();
-            mySettings.EncryptedTargetUserName = Crypto.EncryptStringAES(s, encrPassword);
-            Console.WriteLine(mySettings.EncryptedTargetUserName);
+            s = p.EncryptedTargetUserName = Console.ReadLine();
+            p.EncryptedTargetUserName = Crypto.EncryptStringAES(s, encrPassword);
+            Console.WriteLine(p.EncryptedTargetUserName);
 
 
             Console.WriteLine("Press enter to save");
