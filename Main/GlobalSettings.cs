@@ -41,6 +41,7 @@ namespace MUT
         public override string ToString()
         {
             var s = $"SettingsURI : {SettingsURI}, SettingsPath: {SettingsPath}, UploadLogURI: {UploadLogURI}\n";
+            s += "Protocols:";
             Protocols.ForEach(m => s += m.ToString() + ",");
             return s;
         }
