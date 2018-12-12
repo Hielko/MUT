@@ -7,13 +7,10 @@ using Utils;
 
 namespace MUT.Common
 {
-    public class CommonModule : AModule<CommonConfig> 
+    public class CommonModule : AModule<CommonConfig>
     {
         public const string Filename = "common.json";
-        private ResetTimer resetTimer;
         public Boolean IsTotalSilenceDay;
-        //   public event EventHandler Changed;
-
         public CommonModule(Location location) : base(location)
         {
             Name = "Common";

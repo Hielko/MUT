@@ -15,7 +15,7 @@ namespace Tests
 
         internal static void TestReply()
         {
-             using (ReplyModule replyModule = new ReplyModule( location.GetLocation("reply.json")))
+             using (ReplyModule replyModule = new ReplyModule( location.GetLocation(ReplyModule.Filename)))
             {
                 replyModule.Config.Settings.AntiHammerSeconds = 0;
                 replyModule.Config.Settings.NoReplyChance = 0;
@@ -34,7 +34,7 @@ namespace Tests
 
         internal static void TestDaily()
         {
-            using (DailyModule dailyModule = new DailyModule(location.GetLocation("daily.json")))
+            using (DailyModule dailyModule = new DailyModule(location.GetLocation(DailyModule.Filename)))
             {
                 //dailyModule.Init();
                 dailyModule.Config.Settings.ChanceMultiplier = 0;

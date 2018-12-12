@@ -105,13 +105,6 @@ namespace MUT
             try
             {
                 commonModule = new CommonModule(location.GetLocation(CommonModule.Filename));
-                /*
-                commonModule.Changed += delegate (object o, EventArgs e)
-                {
-                    Log.Info("commonModule: re-loaded: " + commonModule);
-                };
-                */
-             //   commonModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
                 Log.Info(commonModule.ToString());
             }
             catch (Exception ex)
@@ -125,12 +118,7 @@ namespace MUT
             try
             {
                 replyModule = new ReplyModule(location.GetLocation(ReplyModule.Filename));
-                replyModule.configBase.Changed += delegate (object o, EventArgs e)
-                {
-                    Log.Info("replyModule: re-loaded: " + replyModule);
-                };
-               // replyModule.Init(globalSettings.SettingsURI ,globalSettings.SettingsPath);
-                Log.Info("replyModule: " + replyModule);
+                Log.Info(replyModule.ToString());
             }
             catch (Exception ex)
             {
@@ -143,22 +131,13 @@ namespace MUT
             try
             {
                 dailyModule = new DailyModule(location.GetLocation(DailyModule.Filename));
-                dailyModule.Loaded += delegate (object o, ResetDailyEventArgs e)
+                dailyModule.Reset  += delegate (object o, EventArgs e)
                 {
                     outgoingMsgMngr.Clear();
-                    if (e.ByReset || !outgoingMsgMngr.ResumeFileExists)
-                    {
-                        outgoingMsgMngr.Add(dailyModule.Generate(commonModule));
-                        outgoingMsgMngr.Save();
-                        Log.Info("New Daily: " + outgoingMsgMngr);
-                    }
-                    else
-                    {
-                        outgoingMsgMngr.Load();
-                        Log.Info("Resume Daily: " + outgoingMsgMngr);
-                    }
+                    outgoingMsgMngr.Add(dailyModule.Generate(commonModule));
+                    outgoingMsgMngr.Save();
+                    Log.Info("New Generated Daily: " + outgoingMsgMngr);
                 };
-             //   dailyModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
                 Log.Info("dailyModule: " + dailyModule);
             }
             catch (Exception ex)
@@ -240,13 +219,16 @@ namespace MUT
             InitCommon();
             InitReplies();
             InitDaily();
-            
+           
             InitSession();
 
             if (globalSettings.PingMinutes > 0)
             {
                 InitPing();
             }
+
+            outgoingMsgMngr.Load();
+            Log.Info("Resume Daily: " + outgoingMsgMngr);
 
             // Main send msg's loop
             ThrProcessOutgoingMsgList = new Thread(new ThreadStart(ProcessOutgoingMsgList));

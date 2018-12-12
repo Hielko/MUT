@@ -14,9 +14,8 @@ namespace MUT.Daily
     public class DailyModule : AModule<DailyConfig>
     {
         public const string Filename = "daily.json";
-        private ResetTimer resetTimer;
-//        private System.Timers.Timer tmrReload;
-        public event EventHandler<ResetDailyEventArgs> Loaded;
+        public ResetTimer resetTimer;
+        public event EventHandler Reset;
       
         private void InitTimer()
         {
@@ -26,7 +25,7 @@ namespace MUT.Daily
             resetTimer = new ResetTimer(Config.Settings.resetTime, delegate ()
             {
                 LoadConfig();
-                Loaded?.Invoke(this, new ResetDailyEventArgs { ByReset = true });
+                Reset?.Invoke(this, null);
                 return 0;
             });
         }
@@ -35,7 +34,6 @@ namespace MUT.Daily
         public DailyModule(Location location) : base(location)
         {
             Name = "Daily";
-            Loaded?.Invoke(this, new ResetDailyEventArgs { ByReset = false });
             InitTimer();
         }
 
