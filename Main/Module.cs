@@ -36,15 +36,15 @@ namespace MUT
     {
         public String Name { get; protected set; }
         public T Config { get; protected set; }
-        public ConfigBase<T> configBase { get; protected set; }
+        public ConfigBase<T> ConfigBase { get; protected set; }
         public Location Location { get; private set; }
         public event EventHandler Loaded;
         public AModule(Location pLocation)
         {
             this.Location = pLocation;
-            configBase = new ConfigBase<T>();
+            ConfigBase = new ConfigBase<T>();
             LoadConfig();
-            configBase.Changed += delegate (object o, EventArgs e)
+            ConfigBase.Changed += delegate (object o, EventArgs e)
             {
                 Log.Info("Changed: " + ToString());
             };
@@ -52,7 +52,7 @@ namespace MUT
 
         public void LoadConfig()
         {
-            Config = configBase.LoadConfig(Location.GetLocation());
+            Config = ConfigBase.LoadConfig(Location.GetLocation());
             Loaded?.Invoke(this, null);
         }
 
