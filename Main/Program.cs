@@ -104,7 +104,7 @@ namespace MUT
         {
             try
             {
-                commonModule = new CommonModule(location.GetLocation("common.json"));
+                commonModule = new CommonModule(location.GetLocation(CommonModule.Filename));
                 /*
                 commonModule.Changed += delegate (object o, EventArgs e)
                 {
@@ -112,7 +112,7 @@ namespace MUT
                 };
                 */
              //   commonModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
-                Log.Info("commonModule: " + replyModule);
+                Log.Info(commonModule.ToString());
             }
             catch (Exception ex)
             {
@@ -124,7 +124,7 @@ namespace MUT
         {
             try
             {
-                replyModule = new ReplyModule(location.GetLocation("reply.json"));
+                replyModule = new ReplyModule(location.GetLocation(ReplyModule.Filename));
                 replyModule.configBase.Changed += delegate (object o, EventArgs e)
                 {
                     Log.Info("replyModule: re-loaded: " + replyModule);
@@ -142,7 +142,7 @@ namespace MUT
         {
             try
             {
-                dailyModule = new DailyModule(location.GetLocation("daily.json"));
+                dailyModule = new DailyModule(location.GetLocation(DailyModule.Filename));
                 dailyModule.Loaded += delegate (object o, ResetDailyEventArgs e)
                 {
                     outgoingMsgMngr.Clear();

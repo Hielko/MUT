@@ -51,7 +51,7 @@ namespace Tests
         {
             globalSettings = GlobalSettingsIO.Load();
             location = new Location(globalSettings.SettingsURI, globalSettings.SettingsPath);
-            commonModule = new CommonModule(location.GetLocation("common.json"));
+            commonModule = new CommonModule(location.GetLocation(CommonModule.Filename));
 
             TestDaily();
             TestReply();

@@ -13,6 +13,7 @@ namespace MUT.Daily
 
     public class DailyModule : AModule<DailyConfig>
     {
+        public const string Filename = "daily.json";
         private ResetTimer resetTimer;
 //        private System.Timers.Timer tmrReload;
         public event EventHandler<ResetDailyEventArgs> Loaded;

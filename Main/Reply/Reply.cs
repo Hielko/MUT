@@ -20,6 +20,7 @@ namespace MUT.Reply
 
     public class ReplyModule : AModule<ReplyConfig> 
     {
+        public const string Filename = "reply.json";
         private Timer tmrReload;
         private string LastOutText = null;
 
