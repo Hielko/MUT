@@ -10,15 +10,15 @@ namespace Tests
     class Program
     {
         static GlobalSettings globalSettings = new GlobalSettings();
-        static CommonModule commonModule = new CommonModule();
+        static CommonModule commonModule;
+        static Location location;
 
         internal static void TestReply()
         {
-            using (ReplyModule replyModule = new ReplyModule())
+             using (ReplyModule replyModule = new ReplyModule( location.GetLocation(ReplyModule.Filename)))
             {
-                replyModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
-                replyModule.config.Settings.AntiHammerSeconds = 0;
-                replyModule.config.Settings.NoReplyChance = 0;
+                replyModule.Config.Settings.AntiHammerSeconds = 0;
+                replyModule.Config.Settings.NoReplyChance = 0;
                 //     replyModule.config.Settings.ALLCAPSRepeatChance = 7;
                 Console.WriteLine(replyModule);
                 foreach (string sentence in new TestData())
@@ -34,10 +34,10 @@ namespace Tests
 
         internal static void TestDaily()
         {
-            using (DailyModule dailyModule = new DailyModule())
+            using (DailyModule dailyModule = new DailyModule(location.GetLocation(DailyModule.Filename)))
             {
-                dailyModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
-                dailyModule.config.Settings.ChanceMultiplier = 0;
+                //dailyModule.Init();
+                dailyModule.Config.Settings.ChanceMultiplier = 0;
                 Console.WriteLine(dailyModule);
 
                 OutgoingMsgMngr Msgs = new OutgoingMsgMngr();
@@ -49,7 +49,8 @@ namespace Tests
         static void Main(string[] args)
         {
             globalSettings = GlobalSettingsIO.Load();
-            commonModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
+            location = new Location(globalSettings.SettingsURI, globalSettings.SettingsPath);
+            commonModule = new CommonModule(location.GetLocation(CommonModule.Filename));
 
             TestDaily();
             TestReply();

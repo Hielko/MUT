@@ -19,6 +19,7 @@ namespace MUT
         static ReplyModule replyModule;
         static DailyModule dailyModule;
         static CommonModule commonModule;
+        static Location location;
         //static MyStats Stats = new MyStats();
         static Thread ThrProcessOutgoingMsgList;
         static ICollection<IConnector> plugins;
@@ -91,15 +92,8 @@ namespace MUT
         {
             try
             {
-                commonModule = new CommonModule();
-                /*
-                commonModule.Changed += delegate (object o, EventArgs e)
-                {
-                    Log.Info("commonModule: re-loaded: " + commonModule);
-                };
-                */
-                commonModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
-                Log.Info("commonModule: " + replyModule);
+                commonModule = new CommonModule(location.GetLocation(CommonModule.Filename));
+                Log.Info(commonModule.ToString());
             }
             catch (Exception ex)
             {
@@ -111,13 +105,8 @@ namespace MUT
         {
             try
             {
-                replyModule = new ReplyModule();
-                replyModule.Changed += delegate (object o, EventArgs e)
-                {
-                    Log.Info("replyModule: re-loaded: " + replyModule);
-                };
-                replyModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
-                Log.Info("replyModule: " + replyModule);
+                replyModule = new ReplyModule(location.GetLocation(ReplyModule.Filename));
+                Log.Info(replyModule.ToString());
             }
             catch (Exception ex)
             {
@@ -129,23 +118,14 @@ namespace MUT
         {
             try
             {
-                dailyModule = new DailyModule();
-                dailyModule.Loaded += delegate (object o, ResetDailyEventArgs e)
+                dailyModule = new DailyModule(location.GetLocation(DailyModule.Filename));
+                dailyModule.Reset  += delegate (object o, EventArgs e)
                 {
                     outgoingMsgMngr.Clear();
-                    if (e.ByReset || !outgoingMsgMngr.ResumeFileExists)
-                    {
-                        outgoingMsgMngr.Add(dailyModule.Generate(commonModule));
-                        outgoingMsgMngr.Save();
-                        Log.Info("New Daily: " + outgoingMsgMngr);
-                    }
-                    else
-                    {
-                        outgoingMsgMngr.Load();
-                        Log.Info("Resume Daily: " + outgoingMsgMngr);
-                    }
+                    outgoingMsgMngr.Add(dailyModule.Generate(commonModule));
+                    outgoingMsgMngr.Save();
+                    Log.Info("New Generated Daily: " + outgoingMsgMngr);
                 };
-                dailyModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
                 Log.Info("dailyModule: " + dailyModule);
             }
             catch (Exception ex)
@@ -210,6 +190,8 @@ namespace MUT
         public static void Main(string[] args)
         {
             globalSettings = GlobalSettingsIO.Load();
+            location = new Location(globalSettings.SettingsURI, globalSettings.SettingsPath);
+
             if (!String.IsNullOrEmpty(globalSettings.UploadLogURI))
             {
                 Log.WriteEvent += UploadLog;
@@ -233,6 +215,9 @@ namespace MUT
             {
                 InitPing();
             }
+
+            outgoingMsgMngr.Load();
+            Log.Info("Resume Daily: " + outgoingMsgMngr);
 
             // Main send msg's loop
             ThrProcessOutgoingMsgList = new Thread(new ThreadStart(ProcessOutgoingMsgList));

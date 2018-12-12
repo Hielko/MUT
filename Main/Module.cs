@@ -1,34 +1,88 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Net;
+using Logger;
 
 namespace MUT
 {
-    public abstract class AModule<T> : IDisposable
+    public class Location
     {
-        public T config;
-        public String URI { get; set; }
-        public abstract void Dispose();
-        public abstract void LoadConfig();
-        public abstract void Init(String URI, string path);
+        private String URI { get; set; }
+        private String Path { get; set; }
+        private String Filename { get; set; }
+        public Location(String pURI, string pPath, string pFilename)
+        {
+            this.URI = pURI;
+            this.Path = pPath;
+            this.Filename = pFilename;
+        }
+        public Location(String pURI, string pPath)
+        {
+            this.URI = pURI;
+            this.Path = pPath;
+        }
+        public String GetLocation()
+        {
+            return this.URI + this.Path + this.Filename;
+        }
+        public Location GetLocation(String Filename)
+        {
+            return new Location(this.URI, this.Path, Filename);
+        }
     }
 
 
-    public static class ConfigBase<T>
+    public class AModule<T> : IDisposable
     {
-        private static String prevSource;
+        public String Name { get; protected set; }
+        public T Config { get; protected set; }
+        public ConfigBase<T> configBase { get; protected set; }
+        public Location Location { get; private set; }
+        public event EventHandler Loaded;
+        public AModule(Location pLocation)
+        {
+            this.Location = pLocation;
+            configBase = new ConfigBase<T>();
+            LoadConfig();
+            configBase.Changed += delegate (object o, EventArgs e)
+            {
+                Log.Info("Changed: " + ToString());
+            };
+        }
 
-        public static T LoadConfig(String URI, out Boolean isChanged)
+        public void LoadConfig()
+        {
+            Config = configBase.LoadConfig(Location.GetLocation());
+            Loaded?.Invoke(this, null);
+        }
+
+        public void Dispose()
+        {
+            //  throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return $"{Name}: {Config}";
+        }
+    }
+
+
+    public class ConfigBase<T>
+    {
+        private String prevSource;
+        public event EventHandler Changed;
+
+        public T LoadConfig(String pURI)
         {
             try
             {
                 using (WebClient client = new WebClient())
                 {
-                    string pageSource = client.DownloadString(URI);
-                    isChanged = !pageSource.Equals(prevSource);
-                    if (isChanged)
+                    string pageSource = client.DownloadString(pURI);
+                    if (!pageSource.Equals(prevSource))
                     {
-                    //    TESTChanged?.Invoke(T, null);
+                        Changed?.Invoke(this, null);
                     }
                     prevSource = pageSource;
                     return JsonConvert.DeserializeObject<T>(pageSource);
@@ -36,9 +90,8 @@ namespace MUT
             }
             catch (Exception ex)
             {
-                Logger.Log.Error($"Error loading URI {URI}: {ex}");
-                //Console.WriteLine(String.Format("Error loading URI: {0}",URI));
-                //Console.WriteLine(ex.ToString());
+                Console.WriteLine($"Error loading URI {pURI}: {ex}");
+                Logger.Log.Error($"Error loading URI {pURI}: {ex}");
                 throw;
             }
         }
