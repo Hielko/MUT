@@ -21,30 +21,14 @@ namespace MUT.Reply
     public class ReplyModule : AModule<ReplyConfig> 
     {
         private Timer tmrReload;
-        public event EventHandler Changed;
-        private String LastOutText = null;
-
-        public override string ToString()
-        {
-            return String.Format("ReplyModule: {0}", config);
-        }
-
-        public override void LoadConfig()
-        {
-            var tmp = ConfigBase<ReplyConfig>.LoadConfig(URI, out Boolean isChanged);
-            if (isChanged)
-            {
-                config = tmp;
-                Changed?.Invoke(this, null);
-            }
-        }
+        private string LastOutText = null;
 
         private void InitTimer()
         {
             tmrReload?.Dispose();
             tmrReload = new Timer
             {
-                Interval = config.Settings.ReloadMinutes * (60 * 1000),
+                Interval = Config.Settings.ReloadMinutes * (60 * 1000),
                 Enabled = true
             };
             tmrReload.Elapsed += delegate (Object o, ElapsedEventArgs e)
@@ -54,11 +38,10 @@ namespace MUT.Reply
             tmrReload.Start();
         }
 
-        public override void Init(String URI, string path)
+        public ReplyModule(Location location) : base(location)
         {
-            this.URI = URI + path + "reply.json";
-            LoadConfig();
-            if (config.Settings.ReloadMinutes > 0)
+            Name = "Replies";
+            if (Config.Settings.ReloadMinutes > 0)
             {
                 InitTimer();
             }
@@ -75,31 +58,31 @@ namespace MUT.Reply
             MsgOrigins msgOrigin = MsgOrigins.None;
 
             //
-            if (!config.Settings.Enabled)
+            if (!Config.Settings.Enabled)
             {
                 return ReplyStatuses.Disabled;
             }
 
             //
-            if (AntiHammer.HammerDetected(config.Settings.AntiHammerSeconds))
+            if (AntiHammer.HammerDetected(Config.Settings.AntiHammerSeconds))
             {
                 return ReplyStatuses.Hammering;
             }
 
             //
-            var blockPeriod = config.BlockPeriods.Find(period => period.IsMatch(DateTime.Now));
+            var blockPeriod = Config.BlockPeriods.Find(period => period.IsMatch(DateTime.Now));
             if (blockPeriod != null)
             {
                 return ReplyStatuses.InBlockPeriod;
             }
 
             //
-            if (IsChance(config.Settings.NoReplyChance))
+            if (IsChance(Config.Settings.NoReplyChance))
             {
                 return ReplyStatuses.ClearedAtRandom;
             }
 
-            var ruleGroup = config.replies.Find(reply => reply.IsMatch(text));
+            var ruleGroup = Config.replies.Find(reply => reply.IsMatch(text));
             if (ruleGroup != null)
             {
                 OutText = ruleGroup.ReplyText;
@@ -107,7 +90,7 @@ namespace MUT.Reply
             }
             else
             {
-                var defaultReply = config.defaults.Find(dr => Utils.Common.Random(dr.Chance) == 0);
+                var defaultReply = Config.defaults.Find(dr => Utils.Common.Random(dr.Chance) == 0);
                 if (defaultReply != null)
                 {
                     OutText = defaultReply.ReplyText;
@@ -119,20 +102,21 @@ namespace MUT.Reply
                 }
             }
 
-            if (StringUtils.IsAllUppercase(text) && text.Length > config.specials.allcapsreply.MinLength)
+            if (StringUtils.IsAllUppercase(text) && text.Length > Config.specials.allcapsreply.MinLength)
             {
-                if (IsChance(config.specials.allcapsreply.Chance))
+                if (IsChance(Config.specials.allcapsreply.Chance))
                 {
-                    OutText = config.specials.allcapsreply.ReplyText;
+                    OutText = Config.specials.allcapsreply.ReplyText;
                     msgOrigin = MsgOrigins.Special;
                 }
             }
 
             
-            OutText = Parse.DoParse(OutText, commonModule.config.variables);
+            OutText = Parse.DoParse(OutText, commonModule.Config.variables);
+            OutText = Utils.StringUtils.ReplaceRandomTokens(OutText);
 
-            if (config.Settings.TypoChance > 0 && Utils.Common.Random(config.Settings.TypoChance) == 0) { 
-                OutText = Typo.MakeTypo(Utils.StringUtils.ReplaceRandomTokens(OutText));
+            if (Config.Settings.TypoChance > 0 && Utils.Common.Random(Config.Settings.TypoChance) == 0) { 
+                OutText = Typo.MakeTypo(OutText);
             }
 
             //
@@ -142,10 +126,10 @@ namespace MUT.Reply
             }
             LastOutText = OutText.ToUpper();
 
-            int timeOffsetSeconds = config.Settings.DelaySeconds;
+            int timeOffsetSeconds = Config.Settings.DelaySeconds;
             if (msgOrigin == MsgOrigins.Default)
             {
-                timeOffsetSeconds += config.Settings.DelayDefaultReplySeconds;
+                timeOffsetSeconds += Config.Settings.DelayDefaultReplySeconds;
             }
             DateTime executeTime = DateTime.Now.AddSeconds(timeOffsetSeconds + Utils.Common.Random(60));
             foreach (var s in OutText.Split('\n'))
@@ -160,7 +144,7 @@ namespace MUT.Reply
                 });
             }
 
-            if (IsChance(config.Settings.ALLCAPSRepeatChance))
+            if (IsChance(Config.Settings.ALLCAPSRepeatChance))
             {
                 if (outgoingMsgList.Count == 1 && StringUtils.IsAllUppercase(outgoingMsgList[0].Message) == false)
                 {
@@ -177,10 +161,7 @@ namespace MUT.Reply
             return ReplyStatuses.Ok;
         }
 
-        public override void Dispose()
-        {
-            tmrReload?.Stop();
-        }
+
     }
 
 }

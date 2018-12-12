@@ -22,6 +22,7 @@ namespace MUT
         static ReplyModule replyModule;
         static DailyModule dailyModule;
         static CommonModule commonModule;
+        static Location location;
         //static MyStats Stats = new MyStats();
         static Thread ThrProcessOutgoingMsgList;
         static string encrPassword = "jiq91lpqA5aZ";
@@ -103,14 +104,14 @@ namespace MUT
         {
             try
             {
-                commonModule = new CommonModule();
+                commonModule = new CommonModule(location.GetLocation("common.json"));
                 /*
                 commonModule.Changed += delegate (object o, EventArgs e)
                 {
                     Log.Info("commonModule: re-loaded: " + commonModule);
                 };
                 */
-                commonModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
+             //   commonModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
                 Log.Info("commonModule: " + replyModule);
             }
             catch (Exception ex)
@@ -123,12 +124,12 @@ namespace MUT
         {
             try
             {
-                replyModule = new ReplyModule();
-                replyModule.Changed += delegate (object o, EventArgs e)
+                replyModule = new ReplyModule(location.GetLocation("reply.json"));
+                replyModule.configBase.Changed += delegate (object o, EventArgs e)
                 {
                     Log.Info("replyModule: re-loaded: " + replyModule);
                 };
-                replyModule.Init(globalSettings.SettingsURI ,globalSettings.SettingsPath);
+               // replyModule.Init(globalSettings.SettingsURI ,globalSettings.SettingsPath);
                 Log.Info("replyModule: " + replyModule);
             }
             catch (Exception ex)
@@ -141,7 +142,7 @@ namespace MUT
         {
             try
             {
-                dailyModule = new DailyModule();
+                dailyModule = new DailyModule(location.GetLocation("daily.json"));
                 dailyModule.Loaded += delegate (object o, ResetDailyEventArgs e)
                 {
                     outgoingMsgMngr.Clear();
@@ -157,7 +158,7 @@ namespace MUT
                         Log.Info("Resume Daily: " + outgoingMsgMngr);
                     }
                 };
-                dailyModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
+             //   dailyModule.Init(globalSettings.SettingsURI, globalSettings.SettingsPath);
                 Log.Info("dailyModule: " + dailyModule);
             }
             catch (Exception ex)
@@ -223,6 +224,7 @@ namespace MUT
         public static void Main(string[] args)
         {
             globalSettings = GlobalSettingsIO.Load();
+            location = new Location(globalSettings.SettingsURI, globalSettings.SettingsPath);
 
             if (!String.IsNullOrEmpty(globalSettings.UploadLogURI))
             {

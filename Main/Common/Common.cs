@@ -7,32 +7,15 @@ using Utils;
 
 namespace MUT.Common
 {
-    public class CommonModule : AModule<CommonConfig>
+    public class CommonModule : AModule<CommonConfig> 
     {
         private ResetTimer resetTimer;
         public Boolean IsTotalSilenceDay;
-      //  public event EventHandler Changed;
+        //   public event EventHandler Changed;
 
-        public override void Dispose()
+        public CommonModule(Location location) : base(location)
         {
-            throw new NotImplementedException();
-        }
-
-        public override void Init(string URI, string path)
-        {
-            this.URI = URI + path + "common.json";
-            LoadConfig();
-            resetTimer = new ResetTimer(config.resetTime, delegate ()
-              {
-                  IsTotalSilenceDay = (config.AllDisabled > 0) && (Utils.Common.Random(config.AllDisabled) == 0);
-                  return 0;
-              }
-                );
-        }
-
-        public override void LoadConfig()
-        {
-            config = ConfigBase<CommonConfig>.LoadConfig(this.URI, out Boolean isChanged);
+            Name = "Common";
         }
     }
 
