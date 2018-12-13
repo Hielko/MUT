@@ -22,9 +22,7 @@ namespace MUT
     {
         
         public String DDLFilename { get; set; }
-
         public String Name { get; set; }
-
         public Boolean Enabled { get; set; }
 
         public String EncryptedPassword { get; set; }

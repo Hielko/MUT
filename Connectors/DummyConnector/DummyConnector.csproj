@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Main\bin\Debug\</OutputPath>
+    <OutputPath>..\..\Main\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -48,7 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Main\Main.csproj">
+    <ProjectReference Include="..\..\Main\Main.csproj">
       <Project>{5de86dea-6bac-44aa-ac0a-ab14411a9943}</Project>
       <Name>Main</Name>
     </ProjectReference>

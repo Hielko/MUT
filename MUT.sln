@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTestProjec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "Main\Main.csproj", "{5DE86DEA-6BAC-44AA-AC0A-AB14411A9943}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyConnector", "DummyConnector\DummyConnector.csproj", "{522EC7BE-D137-4275-8084-F80250AEE1AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyConnector", "Connectors\DummyConnector\DummyConnector.csproj", "{522EC7BE-D137-4275-8084-F80250AEE1AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

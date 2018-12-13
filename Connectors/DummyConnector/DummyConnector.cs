@@ -9,7 +9,7 @@ namespace DummyConnector
 {
     public class Dummy : IConnector
     {
-        Timer t;
+        private Timer t;
 
         public event EventHandler<ReceivedArgs> MessageReceived;
 
@@ -23,7 +23,7 @@ namespace DummyConnector
             t = new System.Timers.Timer
             {
                 Interval = 2000,
-                AutoReset = false,
+                AutoReset = true,
                 Enabled = true
             };
             t.Elapsed += delegate (Object o, ElapsedEventArgs e)
