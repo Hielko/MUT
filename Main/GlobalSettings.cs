@@ -25,6 +25,8 @@ namespace MUT
 
         public String Name { get; set; }
 
+        public Boolean Enabled { get; set; }
+
         public String EncryptedPassword { get; set; }
         public String Password { get => Crypto.DecryptStringAES(EncryptedPassword, Pass.encrPassword); }
 

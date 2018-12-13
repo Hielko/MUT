@@ -38,6 +38,39 @@ namespace MUT
                 Console.WriteLine(ex.ToString());
             }
         }
+
+
+
+        private static void P_MessageReceived(object sender, ReceivedArgs e)
+        {
+            Log.Debug($"{sender}: {e.Username}   {e.Msg} ");
+
+            // Utils.StringUtils.StripUTF(
+            var logStr = "";
+            if (commonModule.IsTotalSilenceDay)
+            {
+                logStr = "IsTotalSilenceDay";
+            }
+            else
+            {
+                List<OutgoingMsg> Msgs = new List<OutgoingMsg>();
+                var reply = replyModule.GenerateReply(commonModule, Regex.Replace(e.Msg, @"\t|\n|\r", " "), Msgs);
+                logStr = "Reply: " + reply.ToString();
+                if (reply == ReplyStatuses.Ok)
+                {
+                    Msgs.ForEach(m => logStr += (",  Out: " + m.ToString() + "\n"));
+                    outgoingMsgMngr.Add(Msgs);
+                }
+                var canceled = outgoingMsgMngr.CancelDefaultMsgs();
+                if (canceled > 0)
+                {
+                    logStr += String.Format("  ** {0} canceled ** ", canceled);
+                }
+            }
+
+            Log.Debug(logStr + "\n");
+        }
+
         /*
         private static void OnMessageReceived(IcqSharp.Base.Message message)
         {
@@ -201,12 +234,14 @@ namespace MUT
             Log.Debug("Settings: " + globalSettings);
 
             List<String> DDLS = new List<string>();
-            globalSettings.Accounts.ForEach(m => { DDLS.Add(m.DDLFilename); });
+            globalSettings.Accounts.FindAll(z=>z.Enabled).ForEach(m => { DDLS.Add(m.DDLFilename); });
             plugins = MyPlugins<IConnector>.GetPlugins(DDLS.ToArray());
 
             InitCommon();
             InitReplies();
             InitDaily();
+
+            plugins.ToList().ForEach(p => p.MessageReceived += P_MessageReceived);
 
             plugins.ElementAt(0).InitSession(globalSettings, globalSettings.Accounts[0]);
 
