@@ -10,7 +10,7 @@ namespace MUT
     {
         String GetName();
       //  event EventHandler OnMessageReceived;
-        void InitSession(GlobalSettings globalSettings,Protocol protocol);
+        void InitSession(GlobalSettings globalSettings,Account protocol);
         void SendMessage(String user, String msg);
     }
 }

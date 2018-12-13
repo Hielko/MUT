@@ -6,28 +6,37 @@ using System.Linq;
 
 namespace MUT
 {
-    public class Protocol
+    public class Pass
     {
         public static String encrPassword = @"jiq91lpqA5aZ";
+    }
 
+    public class TUserToAccount
+    {
+        public String EncryptedTUserName { get; set; }
+        public String TUserName { get => Crypto.DecryptStringAES(EncryptedTUserName, Pass.encrPassword); }
+        public String ProtocolName { get; set; }
+    }
+
+    public class Account
+    {
+        
         public String DDLFilename { get; set; }
 
         public String Name { get; set; }
 
         public String EncryptedPassword { get; set; }
-        public String Password { get => Crypto.DecryptStringAES(EncryptedPassword, encrPassword); }
+        public String Password { get => Crypto.DecryptStringAES(EncryptedPassword, Pass.encrPassword); }
 
         public String EncryptedLogin { get; set; }
-        public String Login { get=> Crypto.DecryptStringAES(EncryptedLogin, encrPassword);  }
-
-        public String EncryptedTargetUserName { get; set; }
-        public String TargetUserName { get => Crypto.DecryptStringAES(EncryptedTargetUserName, encrPassword); }
+        public String Login { get=> Crypto.DecryptStringAES(EncryptedLogin, Pass.encrPassword);  }
 
         public override string ToString()
         {
             return $"Name: {Name}";
         }
     }
+
 
     public class GlobalSettings
     {
@@ -36,13 +45,17 @@ namespace MUT
         public String UploadLogURI { get; set; }
         public String GetWanIPHost { get; set; }
         public int PingMinutes { get; set; } = 0;
-        public List <Protocol> Protocols { get; set; }
+
+        public List <Account> Accounts { get; set; }
+        public List<TUserToAccount> TUserToAccounts { get; set; }
 
         public override string ToString()
         {
-            var s = $"SettingsURI : {SettingsURI}, SettingsPath: {SettingsPath}, UploadLogURI: {UploadLogURI}\n";
-            s += "Protocols:";
-            Protocols.ForEach(m => s += m.ToString() + ",");
+            var s = $"SettingsURI : {SettingsURI}, SettingsPath: {SettingsPath}, UploadLogURI: {UploadLogURI}";
+            s += "\nAccounts:";
+            Accounts.ForEach(m => s += m.ToString() + ",");
+            s += "\nTUserToAccount:";
+            TUserToAccounts.ForEach(m => s += m.ToString() + ",");
             return s;
         }
     }

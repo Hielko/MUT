@@ -20,11 +20,8 @@ namespace MUT
         static DailyModule dailyModule;
         static CommonModule commonModule;
         static Location location;
-        //static MyStats Stats = new MyStats();
         static Thread ThrProcessOutgoingMsgList;
         static ICollection<IConnector> plugins;
-        //  static string encrPassword = "jiq91lpqA5aZ";
-        //   static string targetUserName;
 
         private static void UploadLog(Object o, EventArgs e)
         {
@@ -150,6 +147,8 @@ namespace MUT
                     else
                     {
                         Log.Debug("Sending  " + msg.Message);
+                        //globalSettings.TUserToAccounts.ForEach(m=>)
+
                         //session.Messaging.Send(new IcqSharp.Base.Message(contact, MessageType.Incoming, msg.Message));
                         //  plugins.ToList().ForEach(p => p.SendMessage(       ))
 
@@ -202,14 +201,14 @@ namespace MUT
             Log.Debug("Settings: " + globalSettings);
 
             List<String> DDLS = new List<string>();
-            globalSettings.Protocols.ForEach(m => { DDLS.Add(m.DDLFilename); });
+            globalSettings.Accounts.ForEach(m => { DDLS.Add(m.DDLFilename); });
             plugins = MyPlugins<IConnector>.GetPlugins(DDLS.ToArray());
 
             InitCommon();
             InitReplies();
             InitDaily();
 
-            plugins.ElementAt(0).InitSession(globalSettings, globalSettings.Protocols[0]);
+            plugins.ElementAt(0).InitSession(globalSettings, globalSettings.Accounts[0]);
 
             if (globalSettings.PingMinutes > 0)
             {

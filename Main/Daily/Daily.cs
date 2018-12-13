@@ -6,10 +6,6 @@ using Utils;
 
 namespace MUT.Daily
 {
-    public class ResetDailyEventArgs : EventArgs
-    {
-        public Boolean ByReset;
-    }
 
     public class DailyModule : AModule<DailyConfig>
     {
