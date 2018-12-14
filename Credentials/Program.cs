@@ -11,9 +11,9 @@ namespace Credentials
             string encrPassword = "jiq91lpqA5aZ";
             GlobalSettings mySettings = GlobalSettingsIO.Load();
 
-            var p = new Protocol();
+            var p = new Account();
             p.Name = "ICQ";
-            mySettings.Protocols.Add(p);
+            mySettings.Accounts.Add(p);
             Console.WriteLine("Enter Login");
             s = Console.ReadLine();
             p.EncryptedLogin = Crypto.EncryptStringAES(s, encrPassword);

@@ -10,7 +10,6 @@ namespace MUT.Common
     public class CommonModule : AModule<CommonConfig>
     {
         public const string Filename = "common.json";
-        public Boolean IsTotalSilenceDay;
         public CommonModule(Location location) : base(location)
         {
             Name = "Common";

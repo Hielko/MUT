@@ -47,9 +47,9 @@ namespace MUT
 
             // Utils.StringUtils.StripUTF(
             var logStr = "";
-            if (commonModule.IsTotalSilenceDay)
+            if (commonModule.Config.AllDisabled > 0)
             {
-                logStr = "IsTotalSilenceDay";
+                logStr = "AllDisabled";
             }
             else
             {
@@ -70,53 +70,6 @@ namespace MUT
 
             Log.Debug(logStr + "\n");
         }
-
-        /*
-        private static void OnMessageReceived(IcqSharp.Base.Message message)
-        {
-            if (message.Contact.Nickname.Equals(targetUserName, StringComparison.CurrentCultureIgnoreCase))
-            {
-                //  Stats.AddMsg();
-                Log.Debug(String.Format("{0} {1}", "Receiving ", message.Text));
-                var logStr="";
-
-                if (commonModule.IsTotalSilenceDay)
-                {
-                    logStr = "IsTotalSilenceDay";
-                }
-                else
-                {
-                    List<OutgoingMsg> Msgs = new List<OutgoingMsg>();
-                    var reply = replyModule.GenerateReply(commonModule, Utils.StringUtils.StripUTF(Regex.Replace(message.Text, @"\t|\n|\r", " ")), Msgs);
-                    logStr = "Reply: " + reply.ToString();
-                    if (reply == ReplyStatuses.Ok)
-                    {
-                        Msgs.ForEach(m => logStr += (",  Out: " + m.ToString() + "\n"));
-                        outgoingMsgMngr.Add(Msgs);
-                    }
-                    var canceled = outgoingMsgMngr.CancelDefaultMsgs();
-                    if (canceled > 0)
-                    {
-                        logStr += String.Format("  ** {0} canceled ** ", canceled);
-                    }
-                }
-
-                Log.Debug(logStr+"\n");
-            }
-        }
-       
-
-        private static void InitSession()
-        {
-            String password = Crypto.DecryptStringAES(globalSettings.EncryptedPassword, encrPassword);
-            String UIN = Crypto.DecryptStringAES(globalSettings.EncryptedLogin, encrPassword);
-            session = new Session(UIN, password);
-            session.ConnectionError += ReConnect;
-            session.Disconnected += ReConnect;
-            session.Connect();
-            session.Messaging.MessageReceived += OnMessageReceived;
-        }
-         */
 
         private static void InitCommon()
         {
@@ -173,14 +126,24 @@ namespace MUT
 
                 if (msg != null)
                 {
-                    if (commonModule.IsTotalSilenceDay)
+                    if (commonModule.Config.AllDisabled>0)
                     {
-                        Log.Debug("IsTotalSilenceDay: Not sending  " + msg.Message);
+                        Log.Debug("AllDisabled: Not sending  " + msg.Message);
                     }
                     else
                     {
                         Log.Debug("Sending  " + msg.Message);
-                        //globalSettings.TUserToAccounts.ForEach(m=>)
+                        var tm = globalSettings.TUserToAccounts.FindAll(m => m.TUserName.Equals(msg.TUserName));
+                        tm.ForEach(m =>
+                        {
+                            var account = globalSettings.Accounts.Find(a => a.Name.Equals(m.TUserName));
+                            var ps = plugins.ToList().FindAll(p => p.GetName().Equals(m.ProtocolName));
+                            ps.ForEach(p => p.SendMessage(m.TUserName, msg.Message));
+
+                        });
+
+                        
+                  //      globalSettings.TUserToAccounts.FindAll(m=>m.TUserName.Equals( msg.TUserName)).ForEach(z=>)
 
                         //session.Messaging.Send(new IcqSharp.Base.Message(contact, MessageType.Incoming, msg.Message));
                         //  plugins.ToList().ForEach(p => p.SendMessage(       ))

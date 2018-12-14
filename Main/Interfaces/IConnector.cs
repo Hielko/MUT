@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MUT
 {
@@ -10,13 +6,25 @@ namespace MUT
     {
         public String Username { get; set; }
         public String Msg { get; set; }
+        public object Context { get; set; }
     }
 
     public interface IConnector
     {
         String GetName();
         event EventHandler<ReceivedArgs> MessageReceived;
-        void InitSession(GlobalSettings globalSettings,Account account);
+        void InitSession(GlobalSettings globalSettings, Account account);
         void SendMessage(String user, String msg);
+    }
+
+    public class BaseConnector
+    {
+        protected GlobalSettings globalSettings;
+        protected Account account;
+        public BaseConnector(GlobalSettings globalSettings, Account account)
+        {
+            this.globalSettings = globalSettings;
+            this.account = account;
+        }
     }
 }

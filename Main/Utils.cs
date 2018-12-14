@@ -14,12 +14,12 @@ namespace Utils
         private System.Timers.Timer tmrReload;
         public event EventHandler Elapsed;
 
-        public ResetTimer(DateTime time, Func<int> callBack)
+        public ResetTimer(DateTime datetime, Func<int> callBack)
         {
-            if (time == null)
+            if (datetime == null)
                 return;
 
-            var resetTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, time.Hour, time.Minute, 0);
+            var resetTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, datetime.Hour, datetime.Minute, 0);
             if (resetTime < DateTime.Now)
                 resetTime = resetTime.AddDays(1);
             TimeSpan ts = resetTime - DateTime.Now;
@@ -98,11 +98,6 @@ namespace Utils
             }
             return result;
         }
-
-
-
-
-
     }
 
 

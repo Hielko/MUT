@@ -11,7 +11,8 @@ public enum MsgOrigins { None, Match, Default, Special };
 public class OutgoingMsg
 {
     public DateTime ExecuteTime { set; get; }
-    public String Message { set; get; }
+    public string Message { set; get; }
+    public string TUserName { set; get; }
     public MsgTypes MsgType { set; get; }
     public MsgOrigins MsgOrigin { set; get; }
     public override string ToString()
