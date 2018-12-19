@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public enum MsgTypes  { Reply, Daily };
+public enum MsgTypes { Reply, Daily };
 public enum MsgOrigins { None, Match, Default, Special };
 
 public class OutgoingMsg
@@ -15,6 +15,7 @@ public class OutgoingMsg
     public string TUserName { set; get; }
     public MsgTypes MsgType { set; get; }
     public MsgOrigins MsgOrigin { set; get; }
+
     public override string ToString()
     {
         return String.Format("t={0:HH:mm:ss} : {1}", ExecuteTime, Message);
@@ -26,8 +27,17 @@ public class OutgoingMsgMngr : IEnumerable
 {
     private const String Filename = "outgoing.json";
     private List<OutgoingMsg> Msgs = new List<OutgoingMsg>();
-     
-    public bool ResumeFileExists  { get => File.Exists(Filename); }
+
+    public bool ResumeFileExists
+    {
+        get => File.Exists(Filename);
+    }
+
+    private List<OutgoingMsg> FutureMsgs
+    {
+        get => Msgs.FindAll(msg => msg.ExecuteTime > DateTime.Now);
+    }
+
 
     public int CancelDefaultMsgs()
     {
@@ -36,7 +46,7 @@ public class OutgoingMsgMngr : IEnumerable
             var last = Msgs.Last();
             if (last.MsgOrigin == MsgOrigins.Match || last.MsgOrigin == MsgOrigins.Special)
             {
-                return Msgs.RemoveAll(x => x.MsgOrigin == MsgOrigins.Default && x.MsgType==MsgTypes.Reply);
+                return Msgs.RemoveAll(x => x.MsgOrigin == MsgOrigins.Default && x.MsgType == MsgTypes.Reply);
             }
         }
         return 0;
@@ -61,7 +71,7 @@ public class OutgoingMsgMngr : IEnumerable
     public void Add(List<OutgoingMsg> o)
     {
         o.ForEach(n => Add(n));
-        Msgs = RemoveExpired();
+        Msgs = FutureMsgs;
     }
 
     public void Clear()
@@ -72,11 +82,6 @@ public class OutgoingMsgMngr : IEnumerable
     public void Remove(OutgoingMsg o)
     {
         Msgs.Remove(o);
-    }
-
-    public List<OutgoingMsg> RemoveExpired()
-    {
-        return Msgs.FindAll(n => n.ExecuteTime > DateTime.Now); 
     }
 
     public override string ToString()
@@ -91,7 +96,7 @@ public class OutgoingMsgMngr : IEnumerable
 
     public IEnumerator GetEnumerator()
     {
-        return Msgs.OrderBy(n => n.ExecuteTime).Where(n => n.ExecuteTime > DateTime.Now).GetEnumerator();
+        return Msgs.OrderBy(msg => msg.ExecuteTime).Where(n => n.ExecuteTime > DateTime.Now).GetEnumerator();
     }
 
     public OutgoingMsg PopFirstExpired()
@@ -121,7 +126,7 @@ public class OutgoingMsgMngr : IEnumerable
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     Msgs = ((List<OutgoingMsg>)serializer.Deserialize(file, typeof(List<OutgoingMsg>)));
-                    Msgs = RemoveExpired();
+                    Msgs = FutureMsgs;
                 }
             }
             catch (Exception)
